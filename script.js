@@ -37,6 +37,7 @@ document.addEventListener('DOMContentLoaded', () => {
   initContacts();
   initGalleries();
   initCarouselButtons();
+  initAgent();
 
   setTimeout(() => {
     initCursor();
@@ -172,7 +173,7 @@ function initLightbox() {
   const prevBtn = $('#lbPrev');
   const nextBtn = $('#lbNext');
   const aiTrack = $('#aiTrack');
-  
+
   if (!lightbox || !aiTrack) return;
 
   const aiImages = SITE_CONFIG.galleries.ai.map(item => item.image);
@@ -236,4 +237,145 @@ function initLightbox() {
     if (e.key === 'ArrowRight') showNext();
     if (e.key === 'ArrowLeft') showPrev();
   });
+}
+
+// ====== Agente Interactivo ======
+function initAgent() {
+  const chat = document.getElementById('agentChat');
+  const optionsContainer = document.getElementById('agentOptions');
+  if (!chat || !optionsContainer) return;
+
+  const questions = [
+    {
+      text: "¡Hola! Soy el asistente virtual de Warner Magic. 🎩✨ Para ayudarte a enfocar tus ideas, ¿podrías decirme qué servicio buscas principalmente?",
+      options: [
+        { label: "Producción Audiovisual / Video", value: "Video" },
+        { label: "Animación 2D / Motion Graphics", value: "Animación" },
+        { label: "Diseño Web", value: "Web" },
+        { label: "Creación de contenido con IA", value: "IA" },
+        { label: "Aún no sé, necesito asesoría", value: "Asesoría" }
+      ]
+    },
+    {
+      text: "¡Excelente! Ahora cuéntame, ¿en qué etapa se encuentra tu proyecto?",
+      options: [
+        { label: "Es solo una idea", value: "Idea" },
+        { label: "Ya está en desarrollo", value: "Desarrollo" },
+        { label: "Ya existe, busco mejorarlo", value: "Mejora" }
+      ]
+    },
+    {
+      text: "Entendido. ¿Cuál es el objetivo principal de este proyecto?",
+      options: [
+        { label: "Vender más productos/servicios", value: "Ventas" },
+        { label: "Mejorar la imagen de mi marca", value: "Branding" },
+        { label: "Informar o educar a mi audiencia", value: "Educación" },
+        { label: "Lanzar un nuevo producto", value: "Lanzamiento" }
+      ]
+    },
+    {
+      text: "Por último, una pregunta importante para adaptar nuestra propuesta: ¿Cuentas con un presupuesto estimado?",
+      options: [
+        { label: "Ya tengo un presupuesto asignado", value: "Asignado" },
+        { label: "Tengo idea de cuánto quiero gastar", value: "Estimado" },
+        { label: "Quiero que me hagan una cotización", value: "Cotización" }
+      ]
+    }
+  ];
+
+  let currentStep = 0;
+  let userAnswers = {};
+
+  const addMessage = (text, sender = 'bot') => {
+    const msg = document.createElement('div');
+    msg.className = 'agent-message ' + sender;
+    msg.innerHTML = text;
+    chat.appendChild(msg);
+    chat.scrollTop = chat.scrollHeight;
+  };
+
+  const renderOptions = () => {
+    optionsContainer.innerHTML = '';
+    if (currentStep < questions.length) {
+      const q = questions[currentStep];
+      q.options.forEach(opt => {
+        const btn = document.createElement('button');
+        btn.className = 'agent-option-btn';
+        btn.textContent = opt.label;
+        btn.onclick = () => handleAnswer(opt);
+        optionsContainer.appendChild(btn);
+      });
+    } else {
+      showFinalResult();
+    }
+  };
+
+  const handleAnswer = (opt) => {
+    if (currentStep === 0) userAnswers.servicio = opt.label;
+    if (currentStep === 1) userAnswers.etapa = opt.label;
+    if (currentStep === 2) userAnswers.objetivo = opt.label;
+    if (currentStep === 3) userAnswers.presupuesto = opt.label;
+
+    addMessage(opt.label, 'user');
+    optionsContainer.innerHTML = '';
+
+    currentStep++;
+
+    setTimeout(() => {
+      if (currentStep < questions.length) {
+        addMessage(questions[currentStep].text, 'bot');
+        renderOptions();
+      } else {
+        showFinalResult();
+      }
+    }, 500);
+  };
+
+  const showFinalResult = () => {
+    const summaryMsg = "¡Perfecto! Hemos recopilado esta información:<br><br>" +
+      "🎬 <b>Servicio:</b> " + userAnswers.servicio + "<br>" +
+      "📍 <b>Etapa:</b> " + userAnswers.etapa + "<br>" +
+      "🎯 <b>Objetivo:</b> " + userAnswers.objetivo + "<br>" +
+      "💰 <b>Presupuesto:</b> " + userAnswers.presupuesto + "<br><br>" +
+      "Con esto, nuestra dupla creativa puede diseñar un plan ideal para ti. ¿Quieres que platiquemos por WhatsApp sobre esta base?";
+
+    addMessage(summaryMsg, 'bot');
+
+    const wpText = encodeURIComponent("Hola Warner Magic, me gustaría platicar sobre un proyecto.\n\nServicio de interés: " + userAnswers.servicio + "\nEtapa: " + userAnswers.etapa + "\nObjetivo: " + userAnswers.objetivo + "\nPresupuesto: " + userAnswers.presupuesto);
+    const wpUrl = 'https://wa.me/5215548947779?text=' + wpText;
+
+    const wpBtn = document.createElement('a');
+    wpBtn.href = wpUrl;
+    wpBtn.target = "_blank";
+    wpBtn.className = 'agent-option-btn whatsapp-btn';
+    wpBtn.innerHTML = '💬 Enviar WhatsApp';
+    optionsContainer.appendChild(wpBtn);
+
+    const restartBtn = document.createElement('button');
+    restartBtn.className = 'agent-option-btn restart-btn';
+    restartBtn.innerHTML = '🔄 Volver a empezar';
+    restartBtn.onclick = () => {
+      chat.innerHTML = '';
+      currentStep = 0;
+      userAnswers = {};
+      startAgent();
+    };
+    optionsContainer.appendChild(restartBtn);
+  };
+
+  const startAgent = () => {
+    addMessage(questions[0].text, 'bot');
+    renderOptions();
+  };
+
+  const observer = new IntersectionObserver((entries) => {
+    if (entries[0].isIntersecting && currentStep === 0 && chat.children.length === 0) {
+      setTimeout(startAgent, 500);
+    }
+  }, { threshold: 0.3 });
+
+  const agenteSection = document.getElementById('agente');
+  if (agenteSection) {
+    observer.observe(agenteSection);
+  }
 }
