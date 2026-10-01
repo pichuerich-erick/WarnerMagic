@@ -43,6 +43,7 @@ document.addEventListener('DOMContentLoaded', () => {
     initCursor();
     initTilt();
     initLightbox();
+    initGlitchScramble();
   }, 100);
 });
 
@@ -378,4 +379,50 @@ function initAgent() {
   if (agenteSection) {
     observer.observe(agenteSection);
   }
+}
+
+// ====== Glitch Scramble Effect (Diamond Header Style) ======
+const GLITCH_GLYPHS = '░▒▓█/$&%#@!<>0123456789';
+
+function scrambleEffect(el, customDuration = 1200) {
+  if (el.dataset.animating === 'true' || typeof anime === 'undefined') return;
+  el.dataset.animating = 'true';
+
+  // Store original HTML content (with <em> tags)
+  const originalHTML = el.dataset.originalHtml || el.innerHTML;
+  if (!el.dataset.originalHtml) el.dataset.originalHtml = originalHTML;
+
+  // Get plain text for scramble
+  const originalText = el.dataset.originalText || el.textContent;
+  if (!el.dataset.originalText) el.dataset.originalText = originalText;
+
+  anime({
+    targets: el,
+    duration: customDuration,
+    easing: 'linear',
+    update: function (anim) {
+      const progress = anim.progress / 100;
+      const letters = originalText.split('');
+      el.textContent = letters.map((char, index) => {
+        if (char === ' ' || char === '\n') return char;
+        const revealPoint = (index / letters.length) * 0.5;
+        if (progress > revealPoint + 0.4) return originalText[index];
+        if (progress > revealPoint) return GLITCH_GLYPHS[Math.floor(Math.random() * GLITCH_GLYPHS.length)];
+        return char;
+      }).join('');
+    },
+    complete: () => {
+      el.innerHTML = originalHTML;
+      el.dataset.animating = 'false';
+    }
+  });
+}
+
+function initGlitchScramble() {
+  const heroH1 = document.querySelector('.hero h1');
+  if (!heroH1) return;
+
+  heroH1.addEventListener('mouseenter', () => {
+    scrambleEffect(heroH1, 1200);
+  });
 }

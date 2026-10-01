@@ -360,7 +360,96 @@ main {
   text-transform: uppercase;
   letter-spacing: .03em;
   color: #fff;
-  text-shadow: 0 4px 20px rgba(0, 0, 0, 0.9), 0 2px 8px rgba(0, 0, 0, 1)
+  text-shadow: 0 4px 20px rgba(0, 0, 0, 0.9), 0 2px 8px rgba(0, 0, 0, 1);
+  position: relative;
+  cursor: pointer;
+  transition: text-shadow 0.3s ease;
+}
+
+/* --- GLITCH EFFECT ON HERO H1 --- */
+.hero h1::after {
+  --glitch-move1: inset(50% 50% 50% 50%);
+  --glitch-move2: inset(31% 0 40% 0);
+  --glitch-move3: inset(39% 0 15% 0);
+  --glitch-move4: inset(45% 0 40% 0);
+  --glitch-move5: inset(45% 0 6% 0);
+  --glitch-move6: inset(14% 0 61% 0);
+  content: attr(data-text);
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  clip-path: var(--glitch-move1);
+  color: #fff;
+  text-shadow: 0 4px 20px rgba(0, 0, 0, 0.9), 0 2px 8px rgba(0, 0, 0, 1);
+  pointer-events: none;
+}
+
+.hero h1:hover {
+  text-shadow: -2px -2px 0px #1df2f0, 2px 2px 0px #E94BE8, 0 4px 20px rgba(0, 0, 0, 0.9);
+}
+
+.hero h1::after {
+  animation: heroGlitch 1s steps(2, end);
+  text-shadow: -4px -4px 0px #1df2f0, 4px 4px 0px #E94BE8;
+}
+
+@keyframes heroGlitch {
+  0% {
+    clip-path: var(--glitch-move1);
+    transform: translate(0px, -10px);
+  }
+
+  10% {
+    clip-path: var(--glitch-move2);
+    transform: translate(-10px, 10px);
+  }
+
+  20% {
+    clip-path: var(--glitch-move3);
+    transform: translate(10px, 0px);
+  }
+
+  30% {
+    clip-path: var(--glitch-move4);
+    transform: translate(-10px, 10px);
+  }
+
+  40% {
+    clip-path: var(--glitch-move5);
+    transform: translate(10px, -10px);
+  }
+
+  50% {
+    clip-path: var(--glitch-move6);
+    transform: translate(-10px, 10px);
+  }
+
+  60% {
+    clip-path: var(--glitch-move1);
+    transform: translate(10px, -10px);
+  }
+
+  70% {
+    clip-path: var(--glitch-move3);
+    transform: translate(-10px, 10px);
+  }
+
+  80% {
+    clip-path: var(--glitch-move2);
+    transform: translate(10px, -10px);
+  }
+
+  90% {
+    clip-path: var(--glitch-move4);
+    transform: translate(-10px, 10px);
+  }
+
+  100% {
+    clip-path: var(--glitch-move1);
+    transform: translate(0);
+  }
 }
 
 .hero h1 em {
@@ -1097,20 +1186,39 @@ spline-viewer {
   width: auto;
   height: auto;
 }
+
 .lightbox__close:hover {
   background: transparent;
   transform: rotate(90deg) scale(1.1);
   color: var(--orange);
 }
 
-.lightbox__prev { left: 4%; }
-.lightbox__next { right: 4%; }
+.lightbox__prev {
+  left: 4%;
+}
+
+.lightbox__next {
+  right: 4%;
+}
 
 @media (max-width: 700px) {
-  .lightbox__btn { top: 88%; transform: translateY(-50%); }
-  .lightbox__prev { left: 20%; }
-  .lightbox__next { right: 20%; }
-  .lightbox__close { top: 16px; right: 16px; }
+  .lightbox__btn {
+    top: 88%;
+    transform: translateY(-50%);
+  }
+
+  .lightbox__prev {
+    left: 20%;
+  }
+
+  .lightbox__next {
+    right: 20%;
+  }
+
+  .lightbox__close {
+    top: 16px;
+    right: 16px;
+  }
 }
 
 .gallery-note {
@@ -1494,6 +1602,7 @@ spline-viewer {
   border-color: var(--orange);
   color: var(--orange);
 }
+
 .agent-option-btn.restart-btn:hover {
   background: var(--orange);
   color: #fff;
@@ -1504,6 +1613,7 @@ spline-viewer {
   border-color: #25D366;
   color: #fff;
 }
+
 .agent-option-btn.whatsapp-btn:hover {
   background: #1ebe57;
   transform: translateY(-2px);
