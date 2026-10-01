@@ -44,6 +44,8 @@ document.addEventListener('DOMContentLoaded', () => {
     initTilt();
     initLightbox();
     initGlitchScramble();
+    initDraggableMarquees();
+    initExpandableVideos();
   }, 100);
 });
 
@@ -424,5 +426,134 @@ function initGlitchScramble() {
 
   heroH1.addEventListener('mouseenter', () => {
     scrambleEffect(heroH1, 1200);
+  });
+}
+
+// ====== Draggable Infinite Marquee ======
+function initDraggableMarquees() {
+  const tracks = $$('.marquee__track, .hero__chips');
+  if (!tracks.length) return;
+
+  tracks.forEach(track => {
+    let speed = track.classList.contains('hero__chips') ? 0.8 : 1.2;
+    let direction = track.id === 'aiTrack' ? 1 : -1;
+    
+    // Disable CSS animation
+    track.style.animation = 'none';
+
+    let position = 0;
+    let isDragging = false;
+    let startX = 0;
+    let currentX = 0;
+    let isHovered = false;
+
+    // Handle hover to pause (only for desktops with fine pointers)
+    if (matchMedia('(pointer: fine)').matches) {
+      track.parentElement.addEventListener('mouseenter', () => isHovered = true);
+      track.parentElement.addEventListener('mouseleave', () => isHovered = false);
+    }
+
+    function loop() {
+      if (!isDragging && !isHovered) {
+         position += direction * speed;
+      }
+      
+      const totalWidth = track.scrollWidth;
+      const halfWidth = totalWidth / 2;
+
+      if (halfWidth > 0) {
+        if (position <= -halfWidth) {
+          position += halfWidth;
+        } else if (position > 0) {
+          position -= halfWidth;
+        }
+      }
+
+      track.style.transform = `translateX(${position}px)`;
+      requestAnimationFrame(loop);
+    }
+
+    function onPointerDown(e) {
+      if (e.target.tagName.toLowerCase() === 'a' || e.target.closest('a')) return;
+      isDragging = true;
+      startX = e.type.includes('touch') ? e.touches[0].clientX : e.clientX;
+      currentX = position;
+      track.style.cursor = 'grabbing';
+      track.style.transition = 'none';
+    }
+
+    function onPointerMove(e) {
+      if (!isDragging) return;
+      const x = e.type.includes('touch') ? e.touches[0].clientX : e.clientX;
+      const walk = (x - startX) * 1.5; // Drag speed multiplier
+      position = currentX + walk;
+    }
+
+    function onPointerUp() {
+      if (!isDragging) return;
+      isDragging = false;
+      track.style.cursor = 'grab';
+    }
+
+    track.addEventListener('mousedown', onPointerDown);
+    window.addEventListener('mousemove', onPointerMove);
+    window.addEventListener('mouseup', onPointerUp);
+
+    track.addEventListener('touchstart', onPointerDown, { passive: true });
+    window.addEventListener('touchmove', onPointerMove, { passive: true });
+    window.addEventListener('touchend', onPointerUp);
+
+    track.style.cursor = 'grab';
+    
+    requestAnimationFrame(loop);
+  });
+}
+
+// ====== Expandable Videos on Play ======
+function initExpandableVideos() {
+  const expandableVideos = $$('.expandable-video');
+  
+  // Inject CSS dynamically for the expanded state
+  const style = document.createElement('style');
+  style.innerHTML = `
+    .video-container {
+      position: relative;
+      z-index: 1;
+      transition: all 0.5s ease;
+    }
+    .video-container.is-playing {
+      z-index: 10;
+      transform: scale(1.05);
+    }
+    /* En pantallas muy pequeñas evitamos un scale excesivo que se salga de la pantalla */
+    @media (max-width: 600px) {
+      .video-container.is-playing {
+        transform: scale(1.02);
+      }
+    }
+  `;
+  document.head.appendChild(style);
+
+  expandableVideos.forEach(video => {
+    const container = video.closest('.video-container');
+    if (!container) return;
+    
+    video.addEventListener('play', () => {
+      // Pause other videos when playing this one
+      expandableVideos.forEach(v => {
+        if (v !== video && !v.paused) {
+          v.pause();
+        }
+      });
+      container.classList.add('is-playing');
+    });
+
+    video.addEventListener('pause', () => {
+      container.classList.remove('is-playing');
+    });
+
+    video.addEventListener('ended', () => {
+      container.classList.remove('is-playing');
+    });
   });
 }

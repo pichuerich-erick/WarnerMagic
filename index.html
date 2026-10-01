@@ -48,6 +48,7 @@
 
       <nav class="nav" id="siteNav" aria-label="Menú principal">
         <a href="#nosotros">Nosotros</a>
+        <a href="#promociones">Promociones</a>
         <a href="#metodo">Método</a>
         <a href="#experiencia">Experiencia</a>
         <a href="#ia">IA</a>
@@ -111,16 +112,50 @@
           narrativa y presencia. Cada cliente tiene su propia magia, por eso desarrollamos soluciones a la medida, con
           criterio estético, precisión técnica y una lectura real del objetivo de marca.</p>
 
-        <div class="story-video">
-          <!-- controls habilita el botón de play y evita el autoplay automático -->
-          <video controls playsinline preload="metadata" poster="assets/logo.png">
-            <source src="assets/REEL.mp4" type="video/mp4">
-            Tu navegador no soporta reproductor de video.
-          </video>
+        <div class="story-videos" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 24px; margin-top: 24px;">
+          <div class="video-container" style="display: flex; flex-direction: column; transition: all 0.5s ease;">
+            <h3 style="text-align: center; margin-bottom: 12px;">PRESENTACIÓN</h3>
+            <video class="expandable-video" controls playsinline preload="metadata" poster="assets/logo.png" style="width: 100%; border-radius: 20px; box-shadow: 0 10px 30px rgba(13, 43, 77, 0.15); background: #000; transition: all 0.5s ease;">
+              <source src="assets/PRESENTACION.mp4" type="video/mp4">
+              Tu navegador no soporta reproductor de video.
+            </video>
+          </div>
+          <div class="video-container" style="display: flex; flex-direction: column; transition: all 0.5s ease;">
+            <h3 style="text-align: center; margin-bottom: 12px;">REEL</h3>
+            <video class="expandable-video" controls playsinline preload="metadata" poster="assets/logo.png" style="width: 100%; border-radius: 20px; box-shadow: 0 10px 30px rgba(13, 43, 77, 0.15); background: #000; transition: all 0.5s ease;">
+              <source src="assets/REEL.mp4" type="video/mp4">
+              Tu navegador no soporta reproductor de video.
+            </video>
+          </div>
         </div>
       </div>
     </section>
 
+    <section class="section reveal" id="promociones">
+      <div class="section-head">
+        <span class="section-tag">PROMOCIONES</span>
+        <h2>Aprovecha nuestras ofertas y promociones exclusivas.</h2>
+      </div>
+      <div class="story panel">
+        <div class="promociones-videos" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 30px; justify-items: center; align-items: start;">
+          <div class="video-container" style="width: 100%; max-width: 400px; transition: all 0.5s ease;">
+            <h3 style="text-align: center; margin-bottom: 12px; font-size: 1.2rem;">Actual</h3>
+            <video class="video-promo expandable-video" controls playsinline preload="metadata" style="width: 100%; border-radius: 20px; aspect-ratio: 9/16; object-fit: cover; box-shadow: 0 10px 30px rgba(13, 43, 77, 0.15); background: #000; transition: all 0.5s ease;">
+              <source src="assets/PROMO01.mp4" type="video/mp4">
+              Tu navegador no soporta reproductor de video.
+            </video>
+          </div>
+          <div class="video-container" style="width: 100%; max-width: 400px; transition: all 0.5s ease;">
+            <h3 style="text-align: center; margin-bottom: 12px; font-size: 1.2rem;">Pasadas</h3>
+            <video class="video-promo expandable-video" controls playsinline preload="metadata" style="width: 100%; border-radius: 20px; aspect-ratio: 9/16; object-fit: cover; box-shadow: 0 10px 30px rgba(13, 43, 77, 0.15); background: #000; transition: all 0.5s ease;">
+              <source src="assets/PROMO_PASADAS.mp4" type="video/mp4">
+              Tu navegador no soporta reproductor de video.
+            </video>
+          </div>
+        </div>
+
+      </div>
+    </section>
     <section class="section reveal" id="metodo">
       <div class="section-head">
         <span class="section-tag">MÉTODO</span>
